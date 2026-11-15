@@ -1,0 +1,6 @@
+[
+  {"name": "EXAMPLE", "url": "https://example.com"},
+  {"name": "GITHUB API", "url": "https://api.github.com"},
+  {"name": "HTTPBIN", "url": "https://httpbin.org/status/200"},
+  {"name": "BOGUS", "url": "https://nonexistent.invalid"}
+]

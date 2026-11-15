@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pit Wall</title>
+<style>
+:root{--bg:#08080c;--panel:#13131a;--panel2:#1c1c26;--line:#262633;--fg:#f2f2f6;--dim:#8b8b9e;--green:#00d26a;--yellow:#ffd60a;--red:#e10600;--purple:#a855f7;--amber:#f59e0b;
+ --ui:Bahnschrift,"DIN Alternate","Arial Narrow","Segoe UI",system-ui,sans-serif;--num:"Cascadia Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--fg);font:15px/1.4 var(--ui);padding:0 clamp(16px,2.5vw,40px) 48px;
+ background:var(--bg) repeating-linear-gradient(135deg,#ffffff05 0 2px,transparent 2px 6px)}
+button,input,select{font:inherit}
+:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 0}
+h1{margin:0;font-size:26px;font-weight:800;font-style:italic;letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;gap:12px}
+h1::before{content:"";width:34px;height:20px;background:var(--red);transform:skewX(-24deg);box-shadow:8px 0 0 -2px var(--red) inset,-8px 0 0 -2px #0000}
+h1 span{color:var(--dim);font-weight:500}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#live{display:flex;align-items:center;gap:8px;color:var(--dim);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-right:8px}
+#live i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+#live.off i{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+button{background:var(--panel2);color:var(--fg);border:1px solid #34344a;padding:8px 16px;border-radius:2px;cursor:pointer;font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+button:hover{border-color:var(--fg)}button.pri{background:var(--red);border-color:var(--red);color:#fff}
+/* race control: one big status block + four stats */
+#hero{display:grid;grid-template-columns:minmax(260px,1.5fr) repeat(4,1fr);gap:12px;margin-bottom:16px}
+#flag{display:flex;flex-direction:column;justify-content:center;padding:18px 24px;background:var(--green);color:#000;font-size:30px;font-weight:800;font-style:italic;text-transform:uppercase;line-height:1.05;clip-path:polygon(0 0,100% 0,calc(100% - 20px) 100%,0 100%)}
+#flag::before{content:"RACE CONTROL";font-size:11px;font-weight:600;font-style:normal;letter-spacing:.18em;opacity:.7;margin-bottom:6px}
+#flag.slow{background:var(--yellow)}#flag.box{background:var(--red);color:#fff}
+.tile{background:var(--panel);border-top:2px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;justify-content:center}
+.tile small{color:var(--dim);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+.tile b{font:700 28px/1.1 var(--num);font-variant-numeric:tabular-nums}
+#box{display:none;background:var(--red);color:#fff;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;margin-bottom:16px;animation:f 1.6s steps(2) infinite}
+@keyframes f{50%{opacity:.5}}
+@media(prefers-reduced-motion:reduce){#box{animation:none}}
+/* timing tower */
+.row,.hd{display:grid;grid-template-columns:40px minmax(160px,1.6fr) 84px 96px 92px minmax(140px,1.4fr) 132px;gap:16px;align-items:center}
+.hd{color:var(--dim);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:0 16px 8px 21px}
+.car{background:var(--panel);border-left:5px solid var(--green);margin-bottom:6px;transition:background .15s}
+.car:hover{background:#181822}
+.car.slow{border-color:var(--yellow)}.car.box{border-color:var(--red)}.car.paused,.car.pending{border-color:#444}
+.car.paused .row,.car.pending .row{opacity:.55}
+.row{padding:12px 16px;cursor:pointer}
+.pos{width:34px;height:34px;display:grid;place-items:center;background:var(--fg);color:#000;font:800 16px var(--num);transform:skewX(-10deg)}
+.n{font-weight:700;font-size:17px;letter-spacing:.02em}.u{display:block;color:var(--dim);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c{text-align:right;font:14px var(--num);font-variant-numeric:tabular-nums}
+.cell{display:inline-block;min-width:76px;padding:5px 10px;text-align:right}
+.cell.p{background:var(--purple);color:#fff;font-weight:700}.cell.g{background:#0b3a22;color:#4ade80}.cell.y{background:#4a3b05;color:var(--yellow)}.cell.r{background:#4a0f10;color:#ff6b6d;font-weight:700}
+.y{color:var(--yellow)}.r{color:#ff4d4f}.g{color:var(--green)}
+.pill{justify-self:start;font-size:11px;font-weight:800;padding:4px 10px;letter-spacing:.12em;background:#0b3a22;color:#4ade80;transform:skewX(-10deg)}
+.pill.slow{background:#4a3b05;color:var(--yellow)}.pill.box{background:var(--red);color:#fff}.pill.paused,.pill.pending{background:#2a2a38;color:var(--dim)}
+.sp{position:relative;height:30px}.sp svg{width:100%;height:100%;display:block}.sp .dot{position:absolute;width:7px;height:7px;border-radius:50%;margin:-3.5px 0 0 -3.5px}
+.sp em{color:var(--dim);font-size:12px;font-style:normal}
+.act{display:flex;gap:4px;justify-content:flex-end}.act button{padding:5px 9px;background:transparent;border-color:transparent;color:var(--dim);font-size:14px;text-transform:none}
+.act button:hover,.act button:focus-visible{background:var(--panel2);border-color:#34344a;color:var(--fg)}
+/* expanded details */
+.more{padding:16px 20px 18px 77px;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px 20px;background:#0f0f15}
+.more[hidden]{display:none}
+.more small{display:block;color:var(--dim);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.more b{font:600 15px var(--num);font-variant-numeric:tabular-nums}
+.more .wide{grid-column:1/-1;color:var(--dim);font-size:13px}.more .wide b{color:var(--fg)}
+#empty{color:var(--dim);text-align:center;padding:56px 16px;border:1px dashed var(--line);line-height:1.8}
+dialog{background:var(--panel);color:var(--fg);border:1px solid #34344a;border-top:3px solid var(--red);padding:20px;min-width:min(440px,92vw)}
+dialog::backdrop{background:#000b}
+dialog h3{font-style:italic;text-transform:uppercase;letter-spacing:.04em}
+label{display:block;margin:10px 0;color:var(--dim);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+input,select{display:block;width:100%;margin-top:4px;background:var(--bg);color:var(--fg);border:1px solid #34344a;padding:8px;border-radius:2px;text-transform:none;letter-spacing:0}
+.two{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+#err,#cerr{color:var(--red);min-height:1.2em;font-size:12px}
+/* load-in: hero on page load, rows only on the first render (render() rebuilds rows on every update) */
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+@keyframes wipe{from{clip-path:polygon(0 0,0 0,0 100%,0 100%)}}
+@keyframes slidein{from{opacity:0;transform:translateX(-28px)}}
+@keyframes reveal{from{clip-path:inset(0 100% 0 0)}}
+@keyframes pop{from{opacity:0}}
+#flag{animation:wipe .6s cubic-bezier(.2,.7,.2,1) both}
+.tile{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.tile:nth-child(2){animation-delay:.1s}.tile:nth-child(3){animation-delay:.18s}.tile:nth-child(4){animation-delay:.26s}.tile:nth-child(5){animation-delay:.34s}
+.car.ent{animation:slidein .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(.35s + var(--i)*70ms)}
+.car.ent .sp svg{animation:reveal .9s cubic-bezier(.3,.6,.2,1) both;animation-delay:calc(.6s + var(--i)*70ms)}
+.car.ent .sp .dot{animation:pop .3s both;animation-delay:calc(1.4s + var(--i)*70ms)}
+@media(prefers-reduced-motion:reduce){#flag,.tile,.car.ent,.car.ent .sp svg,.car.ent .sp .dot{animation:none}}
+@media(max-width:1000px){#hero{grid-template-columns:1fr 1fr}#flag{grid-column:1/-1;clip-path:none}}
+@media(max-width:900px){
+ body{padding:0 12px 40px}.hd{display:none}h1{font-size:22px}
+ .row{grid-template-columns:34px 1fr auto auto;grid-template-areas:"pos car car pill" ". sp sp sp" ". lap up act";gap:10px 12px;padding:12px}
+ .pos{grid-area:pos}.car-n{grid-area:car;min-width:0}.pill{grid-area:pill}.lapc{grid-area:lap;text-align:left}.up24{grid-area:up;text-align:left}.act{grid-area:act}.sp{grid-area:sp}
+ .more{padding:14px 16px}
+}
+</style></head><body>
+<header><h1>Pit Wall <span>/ uptime</span></h1>
+<div class="bar"><span id="live" class="off" role="status"><i></i><span id="livet">CONNECTING</span></span>
+<button class="pri" onclick="openMon()">+ Add car</button><button onclick="openCh()">Team radio</button></div></header>
+<div id="hero"><div id="flag">GREEN FLAG</div>
+<div class=tile><small>Cars running</small><b id="s-ok">–</b></div><div class=tile><small>Avg lap</small><b id="s-lap">–</b></div><div class=tile><small>Uptime 24h</small><b id="s-up">–</b></div><div class=tile><small>Box box</small><b id="s-box">–</b></div></div>
+<div id="box" role="alert" aria-live="polite"></div>
+<div class="hd"><span>P</span><span>Car</span><span>State</span><span class="c">Lap</span><span class="c">Up 24h</span><span>Last 60 laps</span><span></span></div>
+<div id="t"></div>
+<div id="empty" style="display:none">No cars on the grid yet.<br>Click <b>+ ADD CAR</b> and enter a URL to start monitoring.</div>
+
+<dialog id="dm"><form id="fm"><h3 id="dmt" style="margin:0 0 6px">Add monitor</h3>
+<label>Name<input name="name" maxlength="60" placeholder="My API"></label>
+<label>URL<input name="url" required placeholder="https://example.com/health"></label>
+<div class="two"><label>Method<select name="method"><option>GET</option><option>HEAD</option></select></label>
+<label>Every (s)<input name="interval_s" type="number" min="10" max="3600" value="30"></label>
+<label>Timeout (ms)<input name="timeout_ms" type="number" min="1000" max="30000" value="5000"></label></div>
+<label>Expected status (0 = any below 400)<input name="expect_status" type="number" min="0" max="599" value="0"></label>
+<div id="err"></div><div class="act"><button type="button" onclick="dm.close()">Cancel</button><button class="pri">Save</button></div></form></dialog>
+
+<dialog id="dc"><h3 style="margin:0 0 6px">Team radio: alerts</h3>
+<div style="color:var(--dim);font-size:12px">Sent when a car goes BOX BOX and when it recovers.</div><div id="cl"></div>
+<form id="fc"><div class="two"><label>Name<input name="name" placeholder="#ops"></label><label>Type<select name="kind"><option value="slack">Slack</option><option value="discord">Discord</option><option value="webhook">Webhook (JSON)</option></select></label><label>&nbsp;<button class="pri">Add</button></label></div>
+<label>Webhook URL<input name="url" required placeholder="https://hooks.slack.com/services/..."></label></form>
+<div id="cerr"></div><div class="act"><button onclick="dc.close()">Close</button></div></dialog>
+
+<script>
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const api=(m,p,b)=>fetch('/api/'+p,{method:m,headers:{'content-type':'application/json'},body:b&&JSON.stringify(b)}).then(async r=>{const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||r.status);return j});
+let S={monitors:[],channels:[]},first=true,ac,boxed=new Set(),editId=null,open=new Set(),lastMsg=0;
+const PILL={ok:'OK',slow:'SLOW',box:'BOX',paused:'PAUSED',pending:'WAIT'},COL={ok:'#00d26a',slow:'#ffd60a',box:'#e10600'};
+const beep=()=>{try{ac=ac||new AudioContext();const o=ac.createOscillator();o.connect(ac.destination);o.frequency.value=880;o.start();o.stop(ac.currentTime+.25)}catch{}};
+const ms=v=>v==null?'–':v.toFixed(0)+'ms';
+// timing cell: purple = at personal best, yellow = >1.5x best, green otherwise (F1 timing-screen colours)
+const cell=(v,b)=>`<span class="cell ${!b||v<=b*1.02?'p':v>b*1.5?'y':'g'}">${ms(v)}</span>`;
+const pct=v=>v==null?'–':`<span class="${v<95?'r':v<99?'y':''}">${v.toFixed(v==100?0:2)}%</span>`;
+function spark(a,flag){
+ if(!a.length)return'<em>waiting for first lap…</em>';
+ const m=Math.max(1,...a),w=100/Math.max(a.length-1,1),y=v=>34-v/m*30,col=COL[flag]||COL.ok;
+ const pts=a.map((v,i)=>v<0?null:[i*w,y(v)]).filter(Boolean),ln=pts.map(p=>p.join(',')).join(' ');
+ const lastP=a[a.length-1]<0?null:pts[pts.length-1];
+ return`<svg viewBox="0 0 100 36" preserveAspectRatio="none" aria-hidden="true"><polygon fill="${col}" opacity=".12" points="${pts.length?pts[0][0]+',36 '+ln+' '+pts[pts.length-1][0]+',36':''}"/><polyline fill="none" stroke="${col}" stroke-width="1.6" vector-effect="non-scaling-stroke" points="${ln}"/>${a.map((v,i)=>v<0?`<line x1="${i*w}" x2="${i*w}" y2="36" stroke="#e10600" stroke-width="2" vector-effect="non-scaling-stroke"/>`:'').join('')}</svg>${lastP?`<span class=dot style="left:${lastP[0]}%;top:${lastP[1]/36*100}%;background:${col}"></span>`:''}`}
+
+function render(){
+ const d=S.monitors,worst=d.some(x=>x.flag=='box')?'box':d.some(x=>x.flag=='slow')?'slow':'ok';
+ $('flag').className=worst;$('flag').textContent={ok:'Green flag',slow:'Yellow flag',box:'Red flag'}[worst];
+ const run=d.filter(x=>x.enabled),oks=run.filter(x=>x.flag=='ok').length,laps=d.filter(x=>x.last&&x.last.ok).map(x=>x.last.ms),ups=d.filter(x=>x.up24!=null).map(x=>x.up24);
+ const avg=a=>a.length?a.reduce((p,c)=>p+c,0)/a.length:null,nb=d.filter(x=>x.flag=='box').length;
+ $('s-ok').textContent=run.length?`${oks} / ${run.length}`:'–';$('s-lap').textContent=ms(avg(laps));
+ $('s-up').innerHTML=pct(avg(ups));$('s-box').innerHTML=`<span class="${nb?'r':''}">${nb}</span>`;
+ const now=new Set(d.filter(x=>x.flag=='box').map(x=>x.name));
+ $('box').style.display=now.size?'block':'none';$('box').textContent='BOX BOX: '+[...now].join(', ');
+ if([...now].some(n=>!boxed.has(n)))beep();boxed=now;
+ $('empty').style.display=d.length?'none':'block';
+ const ent=first&&d.length>0;if(ent)first=false; // entrance animation plays once
+ $('t').innerHTML=d.map((x,i)=>{const l=x.last||{},o=open.has(x.id);
+  return`<div class="car ${x.flag}${ent?' ent':''}" data-id=${x.id} style="--i:${i}"><div class=row>
+  <b class=pos>${i+1}</b><div class=car-n><span class=n>${esc(x.name)}</span><span class=u>${esc(x.url)}</span></div><span class="pill ${x.flag}">${PILL[x.flag]}</span>
+  <span class="c lapc">${!x.last?'–':l.ok?cell(l.ms,x.best):'<span class="cell r">FAIL</span>'}</span>
+  <span class="c up24">${pct(x.up24)}</span>
+  <div class=sp>${spark(x.spark,x.flag)}</div>
+  <span class=act><button data-a=more aria-expanded=${o} aria-label="Details for ${esc(x.name)}">${o?'▴':'▾'}</button><button data-a=edit aria-label="Edit ${esc(x.name)}">✎</button><button data-a=pause aria-label="${x.enabled?'Pause':'Resume'} ${esc(x.name)}">${x.enabled?'⏸':'▶'}</button><button data-a=del aria-label="Delete ${esc(x.name)}">✕</button></span></div>
+  <div class=more ${o?'':'hidden'}>
+  <span><small>Sector 1 (header)</small>${l.ok?cell(l.s1,x.bestS1):'–'}</span><span><small>Sector 2 (body)</small>${l.ok?cell(l.s2,x.bestS2):'–'}</span>
+  <span><small>HTTP</small><b class="${l.ok?'g':'r'}">${x.last?l.status||'ERR':'–'}</b></span>
+  <span><small>Best lap</small><b>${ms(x.best||null)}</b></span><span><small>Median</small><b>${ms(x.p50||null)}</b></span><span><small>p95</small><b>${ms(x.p95||null)}</b></span>
+  <span><small>Up 7d</small><b>${pct(x.up7)}</b></span><span><small>Up 30d</small><b>${pct(x.up30)}</b></span>
+  <span class=wide>${esc(x.method)} every <b>${x.interval_s}s</b>, timeout <b>${x.timeout_ms}ms</b>, expects <b>${x.expect_status||'&lt;400'}</b></span>${l.err?`<span class="wide r">Last error: ${esc(l.err)}</span>`:''}</div></div>`}).join('');
+ $('cl').innerHTML=S.channels.map(c=>`<div class=ch><span>${esc(c.name)} <span class=u style="display:inline">${esc(c.kind)} · ${esc(c.host)}</span></span><span class=act><button data-a=ctest data-id=${c.id}>Test</button><button data-a=cdel data-id=${c.id} aria-label="Remove ${esc(c.name)}">✕</button></span></div>`).join('')||'<div class=ch style="color:var(--dim)">No alert channels yet.</div>';
+}
+const es=new EventSource('/events');
+es.onmessage=e=>{lastMsg=Date.now();S=JSON.parse(e.data);render();setLive(true)};
+es.onerror=()=>setLive(false);
+function setLive(on){$('live').className=on?'':'off';$('livet').textContent=on?'LIVE':'RECONNECTING'}
+setInterval(()=>{if(lastMsg&&$('live').className==='')$('livet').textContent='LIVE · '+Math.round((Date.now()-lastMsg)/1000)+'s ago'},1000);
+
+function openMon(m){editId=m?m.id:null;$('dmt').textContent=m?'Edit monitor':'Add monitor';$('err').textContent='';
+ const f=$('fm');f.reset();if(m)for(const k of['name','url','method','interval_s','timeout_ms','expect_status'])f[k].value=m[k];dm.showModal()}
+$('fm').onsubmit=async e=>{e.preventDefault();const b=Object.fromEntries(new FormData(e.target));
+ try{await(editId?api('PUT','monitors/'+editId,b):api('POST','monitors',b));dm.close()}catch(x){$('err').textContent=x.message}};
+function openCh(){$('cerr').textContent='';dc.showModal()}
+$('fc').onsubmit=async e=>{e.preventDefault();try{await api('POST','channels',Object.fromEntries(new FormData(e.target)));e.target.reset();$('cerr').textContent=''}catch(x){$('cerr').textContent=x.message}};
+document.body.onclick=async e=>{
+ const car=e.target.closest('.car'),b=e.target.closest('button[data-a]');
+ if(car&&!b&&e.target.closest('.row')){const id=+car.dataset.id;open.has(id)?open.delete(id):open.add(id);return render()} // click row = expand
+ if(!b)return;const id=+(car?car.dataset.id:b.dataset.id),m=S.monitors.find(x=>x.id==id);
+ try{
+  if(b.dataset.a=='more'){open.has(id)?open.delete(id):open.add(id);render()}
+  if(b.dataset.a=='edit')openMon(m);
+  if(b.dataset.a=='pause')await api('PUT','monitors/'+id,{...m,enabled:!m.enabled});
+  if(b.dataset.a=='del'&&confirm('Remove '+m.name+' and its history?'))await api('DELETE','monitors/'+id);
+  if(b.dataset.a=='cdel')await api('DELETE','channels/'+id);
+  if(b.dataset.a=='ctest'){await api('POST','channels/'+id+'/test');$('cerr').style.color='var(--green)';$('cerr').textContent='Test sent.'}
+ }catch(x){$('cerr').style.color='var(--red)';$('cerr').textContent=x.message}};
+</script></body></html>

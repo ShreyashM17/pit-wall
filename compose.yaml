@@ -1,0 +1,20 @@
+# One-command deploy on any VPS with Docker: Caddy gets a free HTTPS certificate, Pit Wall sits behind it.
+# 1. point a DNS record for your domain at the server   2. cp .env.example .env and fill it in   3. docker compose up -d --build
+services:
+  pitwall:
+    build: .
+    restart: unless-stopped
+    environment:
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+    volumes: [pitwall-data:/data]   # monitors + history; back this up
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy-data:/data"]
+    depends_on: [pitwall]
+volumes:
+  pitwall-data:
+  caddy-data:
