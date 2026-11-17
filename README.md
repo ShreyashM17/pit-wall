@@ -8,11 +8,11 @@ A self-hosted uptime monitor dressed as an F1 pit-wall screen. Add URLs, watch l
 - **Small:** plain Node.js, SQLite, no dependencies, no `npm install`.
 - **Team ready:** shared password, Docker image, one-command HTTPS deploy.
 
-## Demo
+## Screenshot
 
-![Pit Wall demo: add a car, watch live latency, get a Slack, Discord or webhook alert on BOX BOX](docs/demo.gif)
+![Pit Wall: race flag, summary tiles, a Box Box banner, and the timing grid with one expanded car](docs/screenshot.png)
 
-A silent preview. Download the [full 30-second video with sound](docs/demo.mp4) (GitHub downloads it instead of playing it).
+Sample data: one car in BOX BOX, one slow, one paused, one waiting for its first check, and the SLOW car expanded to show sector times, median, p95 and uptime.
 
 ## Quick start (just you)
 
