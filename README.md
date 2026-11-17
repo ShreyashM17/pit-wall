@@ -8,6 +8,12 @@ A self-hosted uptime monitor dressed as an F1 pit-wall screen. Add URLs, watch l
 - **Small:** plain Node.js, SQLite, no dependencies, no `npm install`.
 - **Team ready:** shared password, Docker image, one-command HTTPS deploy.
 
+## Demo
+
+[![Pit Wall demo: add a car, watch live latency, get a Slack, Discord or webhook alert on BOX BOX](docs/demo.png)](docs/demo.mp4)
+
+Click the picture to watch the 30-second demo (it has sound).
+
 ## Quick start (just you)
 
 Needs **Node 22.13 or newer** (uses the built-in `node:sqlite`).
