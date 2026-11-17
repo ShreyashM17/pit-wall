@@ -10,9 +10,9 @@ A self-hosted uptime monitor dressed as an F1 pit-wall screen. Add URLs, watch l
 
 ## Demo
 
-[![Pit Wall demo: add a car, watch live latency, get a Slack, Discord or webhook alert on BOX BOX](docs/demo.png)](docs/demo.mp4)
+![Pit Wall demo: add a car, watch live latency, get a Slack, Discord or webhook alert on BOX BOX](docs/demo.gif)
 
-Click the picture to watch the 30-second demo (it has sound).
+A silent preview. Download the [full 30-second video with sound](docs/demo.mp4) (GitHub downloads it instead of playing it).
 
 ## Quick start (just you)
 
