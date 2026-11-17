@@ -20,7 +20,11 @@ const up = (id, span) => { const r = upQ.get(id, Date.now() - span); return r.n 
 
 // seed from the old targets.json once, so v1 users keep their list
 const seed = path.join(__dirname, '..', 'targets.json');
-if (!db.prepare('SELECT 1 FROM monitors').get() && fs.existsSync(seed))
-  for (const t of JSON.parse(fs.readFileSync(seed, 'utf8'))) insMon.run(cleanMon(t));
+// user_version marks "seeded already", so deleting every monitor doesn't bring the demo list back on restart
+if (db.prepare('PRAGMA user_version').get().user_version === 0) {
+  if (!db.prepare('SELECT 1 FROM monitors').get() && fs.existsSync(seed))
+    for (const t of JSON.parse(fs.readFileSync(seed, 'utf8'))) insMon.run(cleanMon(t));
+  db.exec('PRAGMA user_version=1');
+}
 
 module.exports = { db, insMon, updMon, insSample, up };

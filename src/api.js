@@ -14,7 +14,11 @@ async function body(req) {
 async function api(req, res, p) {
   const [, , what, id, sub] = p.split('/'), b = req.method !== 'GET' && req.method !== 'DELETE' && sub !== 'test' ? await body(req) : {};
   if (what === 'monitors' && req.method === 'POST' && !id) { const r = insMon.run(cleanMon(b)); touch(); return json(res, 201, { id: Number(r.lastInsertRowid) }); }
-  if (what === 'monitors' && req.method === 'PUT' && id) { updMon.run({ ...cleanMon(b), id: +id }); touch(); return json(res, 200, {}); }
+  if (what === 'monitors' && req.method === 'PUT' && id) {
+    const m = cleanMon(b); // the Edit form sends no `enabled`; keep the stored value so editing a paused car doesn't resume it
+    if (b.enabled === undefined) m.enabled = db.prepare('SELECT enabled FROM monitors WHERE id=?').get(+id)?.enabled ?? 1;
+    updMon.run({ ...m, id: +id }); touch(); return json(res, 200, {});
+  }
   if (what === 'monitors' && req.method === 'DELETE' && id) {
     rt.delete(+id); db.prepare('DELETE FROM samples WHERE monitor_id=?').run(+id); db.prepare('DELETE FROM monitors WHERE id=?').run(+id); touch(); return json(res, 200, {});
   }

@@ -2,7 +2,8 @@ FROM node:24-alpine
 # tini = proper PID 1, so `docker stop` (SIGTERM) shuts the server down at once instead of waiting 10s for SIGKILL
 RUN apk add --no-cache tini
 WORKDIR /app
-COPY server.js index.html ./
+COPY server.js ./
+COPY public ./public
 COPY src ./src
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000 DB_PATH=/data/pitwall.db
 RUN mkdir /data && chown node:node /data

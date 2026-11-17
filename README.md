@@ -52,6 +52,29 @@ Checked against the last 60 samples, first match wins:
 
 Yellow flag: the last probe failed, or the last lap took more than 1.5x the median. Alerts are sent only when a monitor turns red and when it recovers, not repeatedly in between.
 
+## Alerts
+
+Open **Team radio** to add a channel (Slack, Discord or a generic webhook) and press **Test** to check it. Pit Wall sends a JSON `POST` when a car goes BOX BOX and again when it recovers:
+
+| Channel | Body |
+|---|---|
+| Slack | `{ "text": "🔴 BOX BOX: API is degraded (HTTP 503) https://..." }` |
+| Discord | `{ "content": "🔴 BOX BOX: API is degraded (HTTP 503) https://..." }` |
+| Webhook | `{ "text": "...", "event": "down" \| "up" \| "test", "monitor": "API", "url": "https://...", "info": "HTTP 503" }` |
+
+Webhook URLs are never sent back to the browser, only the host is shown.
+
+## Project layout
+
+```
+server.js          HTTP server, auth, routing, serves public/
+src/               backend modules (config, auth, db, probe, scheduler, alerts, api, ...)
+public/index.html  markup only
+public/styles.css  all styling, class selectors only
+public/app.js      all front-end behaviour
+test.js            unit checks for the health logic and URL validation
+```
+
 ## Tests
 
 ```
@@ -69,11 +92,14 @@ Covers the health logic and URL validation (no database or network needed).
 - Monitors can target any http(s) URL, including internal addresses. Fine for a trusted team, not for open sign-up.
 - No limit on password guessing: use a long password.
 
-More detail on how each part works is in [KNOWLEDGE.md](KNOWLEDGE.md).
-
 ## Contributing
 
-Issues and pull requests are welcome. Keep it dependency-free and run `node test.js` before sending a change.
+Issues and pull requests are welcome.
+
+- Keep it dependency-free, with no front-end build step.
+- Use 2-space indentation (`.editorconfig` is included).
+- In CSS, style with classes only: no tag or `#id` selectors. Reuse the shared ones (`.btn`, `.input`, `.eyebrow`, `.num`) before adding new rules.
+- Run `node test.js` before sending a change.
 
 ## License
 

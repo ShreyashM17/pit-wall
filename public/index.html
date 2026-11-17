@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pit Wall</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body class="page">
+    <header class="topbar">
+      <h1 class="brand">Pit Wall <span class="brand-sub">/ uptime</span></h1>
+      <div class="toolbar">
+        <span id="live" class="live is-off" role="status">
+          <span class="live-dot"></span>
+          <span id="livet">CONNECTING</span>
+        </span>
+        <button id="add-car" class="btn btn-primary">+ Add car</button>
+        <button id="team-radio" class="btn">Team radio</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div id="flag" class="flag">GREEN FLAG</div>
+      <div class="tile">
+        <span class="tile-label eyebrow">Cars running</span>
+        <b id="s-ok" class="tile-value num">–</b>
+      </div>
+      <div class="tile">
+        <span class="tile-label eyebrow">Avg lap</span>
+        <b id="s-lap" class="tile-value num">–</b>
+      </div>
+      <div class="tile">
+        <span class="tile-label eyebrow">Uptime 24h</span>
+        <b id="s-up" class="tile-value num">–</b>
+      </div>
+      <div class="tile">
+        <span class="tile-label eyebrow">Box box</span>
+        <b id="s-box" class="tile-value num">–</b>
+      </div>
+    </section>
+
+    <div id="box" class="alert-banner" role="alert" aria-live="polite"></div>
+
+    <div class="grid-head eyebrow">
+      <span>P</span>
+      <span>Car</span>
+      <span>State</span>
+      <span class="metric num">Lap</span>
+      <span class="metric num">Up 24h</span>
+      <span>Last 60 laps</span>
+      <span></span>
+    </div>
+    <div id="t"></div>
+    <div id="empty" class="empty">
+      No cars on the grid yet.<br />Click <b>+ ADD CAR</b> and enter a URL to start monitoring.
+    </div>
+
+    <dialog id="dm" class="dialog">
+      <form id="fm">
+        <h3 id="dmt" class="dialog-title">Add monitor</h3>
+        <label class="field-label"
+          >Name<input class="input" name="name" maxlength="60" placeholder="My API"
+        /></label>
+        <label class="field-label"
+          >URL<input class="input" name="url" required placeholder="https://example.com/health"
+        /></label>
+        <div class="form-row">
+          <label class="field-label"
+            >Method<select class="select" name="method">
+              <option class="option">GET</option>
+              <option class="option">HEAD</option>
+            </select></label
+          >
+          <label class="field-label"
+            >Every (s)<input
+              class="input"
+              name="interval_s"
+              type="number"
+              min="10"
+              max="3600"
+              value="30"
+          /></label>
+          <label class="field-label"
+            >Timeout (ms)<input
+              class="input"
+              name="timeout_ms"
+              type="number"
+              min="1000"
+              max="30000"
+              value="5000"
+          /></label>
+        </div>
+        <label class="field-label"
+          >Expected status (0 = any below 400)<input
+            class="input"
+            name="expect_status"
+            type="number"
+            min="0"
+            max="599"
+            value="0"
+        /></label>
+        <div id="err" class="form-msg"></div>
+        <div class="actions dialog-actions">
+          <button id="dm-cancel" type="button" class="btn btn-lg">Cancel</button>
+          <button class="btn btn-lg btn-primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dc" class="dialog">
+      <h3 class="dialog-title">Team radio: alerts</h3>
+      <div class="dialog-note">Sent when a car goes BOX BOX and when it recovers.</div>
+      <div id="cl" class="channel-list"></div>
+      <form id="fc">
+        <div class="form-row form-row-radio">
+          <label class="field-label"
+            >Name<input class="input" name="name" placeholder="#ops"
+          /></label>
+          <label class="field-label"
+            >Type<select class="select" name="kind">
+              <option class="option" value="slack">Slack</option>
+              <option class="option" value="discord">Discord</option>
+              <option class="option" value="webhook">Webhook (JSON)</option>
+            </select></label
+          >
+          <label class="field-label"
+            >&nbsp;<button class="btn btn-primary btn-field">Add</button></label
+          >
+        </div>
+        <label class="field-label"
+          >Webhook URL<input
+            class="input"
+            name="url"
+            required
+            placeholder="https://hooks.slack.com/services/..."
+        /></label>
+      </form>
+      <div id="cerr" class="form-msg"></div>
+      <div class="actions dialog-actions">
+        <button id="dc-close" class="btn btn-lg">Close</button>
+      </div>
+    </dialog>
+  </body>
+</html>

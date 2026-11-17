@@ -3,5 +3,5 @@ data
 node_modules
 .env
 test.js
-KNOWLEDGE.md
+local
 *.md

@@ -1,0 +1,860 @@
+/* Pit Wall styles. Class selectors only (no tag or #id selectors), so markup can change freely. */
+
+/* ---- tokens ---- */
+:root {
+  --bg: #08080c;
+  --panel: #13131a;
+  --panel2: #1c1c26;
+  --line: #262633;
+  --edge: #34344a;
+  --fg: #f2f2f6;
+  --dim: #8b8b9e;
+  --green: #00d26a;
+  --yellow: #ffd60a;
+  --red: #e10600;
+  --purple: #a855f7;
+  --amber: #f59e0b;
+  --bad: #ff4d4f;
+  --ok-bg: #0b3a22;
+  --ok-fg: #4ade80;
+  --warn-bg: #4a3b05;
+  --bad-bg: #4a0f10;
+  --bad-fg: #ff6b6d;
+  --idle-bg: #2a2a38;
+  --hover: #181822;
+  --sunken: #0f0f15;
+  --ui: Bahnschrift, "DIN Alternate", "Arial Narrow", "Segoe UI", system-ui, sans-serif;
+  --num: "Cascadia Mono", Consolas, ui-monospace, monospace;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---- base ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+.page {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--fg);
+  font: 15px/1.4 var(--ui);
+  padding: 0 clamp(16px, 2.5vw, 40px) 48px;
+  background: var(--bg) repeating-linear-gradient(135deg, #ffffff05 0 2px, transparent 2px 6px);
+}
+
+/* ---- shared utilities ---- */
+.eyebrow {
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.subtle {
+  color: var(--dim);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--dim);
+}
+
+.num {
+  font-family: var(--num);
+  font-variant-numeric: tabular-nums;
+}
+
+.text-good {
+  color: var(--green);
+}
+
+.text-warn {
+  color: var(--yellow);
+}
+
+.text-bad {
+  color: var(--bad);
+}
+
+/* ---- buttons: .btn plus modifiers ---- */
+.btn {
+  font: inherit;
+  background: var(--panel2);
+  color: var(--fg);
+  border: 1px solid var(--edge);
+  padding: 0 16px;
+  height: 34px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 12px;
+  /* letter-spacing adds trailing space on the right; indent cancels it so the ink is centred */
+  text-indent: 0.06em;
+  text-align: center;
+}
+
+/* caps sit high in the line box; trim to cap height so they centre vertically */
+@supports (text-box: trim-both cap alphabetic) {
+  .btn {
+    text-box: trim-both cap alphabetic;
+  }
+}
+
+.btn:hover {
+  border-color: var(--fg);
+}
+
+.btn-primary,
+.btn-primary:hover {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+/* dialog footer buttons: full size */
+.btn-lg {
+  height: 38px;
+  padding: 0 18px;
+}
+
+/* the Add button sitting in a form row: same height as the inputs beside it */
+.btn-field {
+  display: block;
+  width: 100%;
+  height: 38px;
+  margin-top: 4px;
+}
+
+/* compact icon-style buttons in a car row */
+.btn-ghost {
+  padding: 0 9px;
+  height: 32px;
+  background: transparent;
+  border-color: transparent;
+  color: var(--dim);
+  font-size: 14px;
+  text-transform: none;
+}
+
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  background: var(--panel2);
+  border-color: var(--edge);
+  color: var(--fg);
+}
+
+.btn-compact {
+  min-width: 32px;
+  padding: 0 10px;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.btn-outline {
+  font-size: 12px;
+  text-transform: uppercase;
+  border-color: var(--edge);
+  color: var(--fg);
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+/* ---- top bar ---- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+.brand {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand::before {
+  content: "";
+  width: 34px;
+  height: 20px;
+  background: var(--red);
+  transform: skewX(-24deg);
+  box-shadow:
+    8px 0 0 -2px var(--red) inset,
+    -8px 0 0 -2px #0000;
+}
+
+.brand-sub {
+  color: var(--dim);
+  font-weight: 500;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--dim);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-right: 8px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+}
+
+.live.is-off .live-dot {
+  background: var(--amber);
+  box-shadow: 0 0 8px var(--amber);
+}
+
+/* ---- race control: one big status block + four stats ---- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.5fr) repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.flag {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px 24px;
+  background: var(--green);
+  color: #000;
+  font-size: 30px;
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  line-height: 1.05;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%);
+}
+
+.flag::before {
+  content: "RACE CONTROL";
+  font-size: 11px;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.18em;
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+
+.flag-slow {
+  background: var(--yellow);
+}
+
+.flag-box {
+  background: var(--red);
+  color: #fff;
+}
+
+.tile {
+  background: var(--panel);
+  border-top: 2px solid var(--line);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tile-label {
+  margin-bottom: 4px;
+}
+
+.tile-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.alert-banner {
+  display: none;
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  animation: blink 1.6s steps(2) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ---- timing tower ---- */
+.car-row,
+.grid-head {
+  display: grid;
+  grid-template-columns: 40px minmax(160px, 1.6fr) 84px 96px 92px minmax(140px, 1.4fr) 132px;
+  gap: 16px;
+  align-items: center;
+}
+
+.grid-head {
+  padding: 0 16px 8px 21px;
+}
+
+.car {
+  background: var(--panel);
+  border-left: 5px solid var(--green);
+  margin-bottom: 6px;
+  transition: background 0.15s;
+}
+
+.car:hover {
+  background: var(--hover);
+}
+
+.car-slow {
+  border-color: var(--yellow);
+}
+
+.car-box {
+  border-color: var(--red);
+}
+
+.car-paused,
+.car-pending {
+  border-color: #444;
+}
+
+.car-paused .car-row,
+.car-pending .car-row {
+  opacity: 0.55;
+}
+
+.car-row {
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.car-pos {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: var(--fg);
+  color: #000;
+  font: 800 16px var(--num);
+  transform: skewX(-10deg);
+}
+
+.car-name {
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+}
+
+.car-url {
+  display: block;
+}
+
+.metric {
+  text-align: right;
+  font-size: 14px;
+  line-height: normal;
+}
+
+/* timing cell: purple = at personal best, yellow = >1.5x best, green otherwise (F1 timing-screen colours) */
+.cell {
+  display: inline-block;
+  min-width: 76px;
+  padding: 5px 10px;
+  text-align: right;
+}
+
+.cell-best {
+  background: var(--purple);
+  color: #fff;
+  font-weight: 700;
+}
+
+.cell-good {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+
+.cell-slow {
+  background: var(--warn-bg);
+  color: var(--yellow);
+}
+
+.cell-bad {
+  background: var(--bad-bg);
+  color: var(--bad-fg);
+  font-weight: 700;
+}
+
+.pill {
+  justify-self: start;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  letter-spacing: 0.12em;
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+  transform: skewX(-10deg);
+}
+
+.pill-slow {
+  background: var(--warn-bg);
+  color: var(--yellow);
+}
+
+.pill-box {
+  background: var(--red);
+  color: #fff;
+}
+
+.pill-paused,
+.pill-pending {
+  background: var(--idle-bg);
+  color: var(--dim);
+}
+
+.spark {
+  position: relative;
+  height: 30px;
+}
+
+.spark-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.spark-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin: -3.5px 0 0 -3.5px;
+}
+
+.spark-empty {
+  color: var(--dim);
+  font-size: 12px;
+}
+
+/* ---- expanded car details ---- */
+.car-details {
+  padding: 16px 20px 18px 77px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 14px 20px;
+  background: var(--sunken);
+}
+
+.car-details[hidden] {
+  display: none;
+}
+
+.details-label {
+  display: block;
+  margin-bottom: 3px;
+  letter-spacing: 0.12em;
+}
+
+.details-value {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.details-note {
+  grid-column: 1 / -1;
+  color: var(--dim);
+  font-size: 13px;
+}
+
+.details-strong {
+  color: var(--fg);
+}
+
+.empty {
+  display: none;
+  color: var(--dim);
+  text-align: center;
+  padding: 56px 16px;
+  border: 1px dashed var(--line);
+  line-height: 1.8;
+}
+
+/* ---- dialogs and forms ---- */
+.dialog {
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--edge);
+  border-top: 3px solid var(--red);
+  padding: 20px;
+  min-width: min(440px, 92vw);
+}
+
+.dialog::backdrop {
+  background: #000b;
+}
+
+.dialog-title {
+  margin: 0 0 6px;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dialog-note {
+  color: var(--dim);
+  font-size: 12px;
+}
+
+.dialog-actions {
+  margin-top: 16px;
+  gap: 8px;
+}
+
+.field-label {
+  display: block;
+  margin: 10px 0;
+  color: var(--dim);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.input,
+.select {
+  font: inherit;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 38px;
+  margin-top: 4px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--edge);
+  padding: 8px;
+  border-radius: 2px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  align-items: end;
+}
+
+.form-row-radio {
+  grid-template-columns: 1fr 1fr 96px;
+}
+
+.form-msg {
+  color: var(--red);
+  min-height: 1.2em;
+  font-size: 12px;
+}
+
+.form-msg-ok {
+  color: var(--green);
+}
+
+/* alert channels list in the Team radio dialog */
+.channel-list {
+  margin: 8px 0 12px;
+}
+
+.channel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.channel-list .channel:last-child {
+  border-bottom: 0;
+}
+
+.channel-info {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.channel-actions {
+  align-items: center;
+}
+
+/* dropdowns: own chevron; where supported (Chrome/Edge 135+) the open list is styled too, elsewhere it falls back to the native list with dark colours */
+.select {
+  appearance: none;
+  padding-right: 34px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--bg)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238b8b9e' stroke-width='1.8'/%3E%3C/svg%3E")
+    no-repeat right 12px center / 12px;
+}
+
+.select:hover,
+.select:open {
+  border-color: var(--fg);
+}
+
+.option {
+  background: var(--panel);
+  color: var(--fg);
+}
+
+@supports (appearance: base-select) {
+  .select,
+  .select::picker(select) {
+    appearance: base-select;
+  }
+
+  .select::picker-icon {
+    display: none;
+  }
+
+  .select::picker(select) {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-top: 2px solid var(--red);
+    padding: 0;
+    margin-top: 4px;
+    box-shadow: 0 12px 32px #000a;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 6px;
+    border-left: 2px solid transparent;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .option:hover,
+  .option:focus-visible {
+    background: var(--panel2);
+  }
+
+  .option:checked {
+    border-left-color: var(--red);
+    color: #fff;
+  }
+
+  .option::checkmark {
+    display: none;
+  }
+}
+
+/* ---- load-in: hero on page load, rows only on the first render (render() rebuilds rows on every update) ---- */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes wipe {
+  from {
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  }
+}
+
+@keyframes slidein {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+}
+
+@keyframes reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+  }
+}
+
+.flag {
+  animation: wipe 0.6s var(--ease) both;
+}
+
+.tile {
+  animation: rise 0.5s var(--ease) both;
+}
+
+.tile:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.tile:nth-child(3) {
+  animation-delay: 0.18s;
+}
+
+.tile:nth-child(4) {
+  animation-delay: 0.26s;
+}
+
+.tile:nth-child(5) {
+  animation-delay: 0.34s;
+}
+
+.car-enter {
+  animation: slidein 0.5s var(--ease) both;
+  animation-delay: calc(0.35s + var(--i) * 70ms);
+}
+
+.car-enter .spark-svg {
+  animation: reveal 0.9s cubic-bezier(0.3, 0.6, 0.2, 1) both;
+  animation-delay: calc(0.6s + var(--i) * 70ms);
+}
+
+.car-enter .spark-dot {
+  animation: pop 0.3s both;
+  animation-delay: calc(1.4s + var(--i) * 70ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alert-banner,
+  .flag,
+  .tile,
+  .car-enter,
+  .car-enter .spark-svg,
+  .car-enter .spark-dot {
+    animation: none;
+  }
+}
+
+/* ---- responsive ---- */
+@media (max-width: 1000px) {
+  .hero {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .flag {
+    grid-column: 1 / -1;
+    clip-path: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding: 0 12px 40px;
+  }
+
+  .grid-head {
+    display: none;
+  }
+
+  .brand {
+    font-size: 22px;
+  }
+
+  .car-row {
+    grid-template-columns: 34px 1fr auto auto;
+    grid-template-areas:
+      "pos car car pill"
+      ". sp sp sp"
+      ". lap up act";
+    gap: 10px 12px;
+    padding: 12px;
+  }
+
+  .car-pos {
+    grid-area: pos;
+  }
+
+  .car-info {
+    grid-area: car;
+    min-width: 0;
+  }
+
+  .pill {
+    grid-area: pill;
+    justify-self: end;
+  }
+
+  .metric-lap {
+    grid-area: lap;
+    text-align: left;
+  }
+
+  .metric-up {
+    grid-area: up;
+    text-align: left;
+  }
+
+  .car-actions {
+    grid-area: act;
+  }
+
+  .spark {
+    grid-area: sp;
+  }
+
+  .car-details {
+    padding: 14px 16px;
+  }
+}

@@ -10,7 +10,7 @@ function start() {
     const now = Date.now();
     for (const m of db.prepare('SELECT * FROM monitors WHERE enabled=1').all()) {
       const r = rtOf(m.id);
-      if (!r.running && now - r.last >= m.interval_s * 1000) { r.running = true; r.last = now; probe(m, r).finally(() => { r.running = false; }); }
+      if (!r.running && now - r.last >= m.interval_s * 1000) { r.running = true; r.last = now; probe(m, r).catch(e => console.error('probe failed:', m.name, e.message)).finally(() => { r.running = false; }); }
     }
     flush();
     if (++tick % 15 === 0) heartbeat();
